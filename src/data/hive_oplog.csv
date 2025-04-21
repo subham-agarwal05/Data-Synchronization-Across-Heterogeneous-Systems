@@ -1,0 +1,2 @@
+OpID,Timestamp,Table,Student ID, Course ID, Column,Operation,NewValue
+1,2025-04-22T00:25:54.504096+05:30,student_course_grades,SID1310,CSE020,grade,SET,C
