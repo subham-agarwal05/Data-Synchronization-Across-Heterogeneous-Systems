@@ -2,16 +2,17 @@ package org.example.Postgres_System;
 
 import java.sql.*;
 import java.time.ZonedDateTime;
-
+import org.example.DatabaseDAOInterface;
 import org.example.MongoDB.OplogEntry;
-public class PostgresDAO {
+public class PostgresDAO implements DatabaseDAOInterface{
 
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres_db";
     private static final String USER = "postgres";
     private static final String PASSWORD = "root";
 
     // 1. Get field value by composite key
-    public static String getFieldValueByCompositeKey(String studentID, String courseID, String fieldName, String tableName) throws SQLException {
+    @Override
+    public String getFieldValueByCompositeKey(String studentID, String courseID, String fieldName, String tableName) throws SQLException {
         // Query to fetch the field value using the composite key (student-ID, course-ID)
         String query = String.format("SELECT \"%s\" FROM %s WHERE \"student-ID\" = ? AND \"course-id\" = ?", fieldName, tableName);
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -33,7 +34,8 @@ public class PostgresDAO {
 
 
     // 2. Update field value by composite key
-    public static void updateFieldByCompositeKey(String studentID, String courseID, String targetFieldName, String newValue, String tableName) throws SQLException {
+    @Override
+    public void updateFieldByCompositeKey(String studentID, String courseID, String targetFieldName, String newValue, String tableName) throws SQLException {
         // Dynamically include the table name and target field name in the query
         String update = String.format("UPDATE %s SET \"%s\" = ? WHERE \"student-ID\" = ? AND \"course-id\" = ?", tableName, targetFieldName);
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -56,17 +58,17 @@ public class PostgresDAO {
     public static void main(String[] args) {
         try {
             Class.forName("org.postgresql.Driver");
-
+            DatabaseDAOInterface dao = new PostgresDAO();
             String studentID = "SID1033";
             String courseID = "CSE016";
             String fieldName = "grade";
             String tableName = "student_course_grades";
-            String fieldValue = getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
+            String fieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
             System.out.println("Field Value: " + fieldValue);
 
-            String newValue = "B+";
-            updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
-            String updatedFieldValue = getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
+            String newValue = "A";
+            dao.updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
+            String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
             System.out.println("Updated Field Value: " + updatedFieldValue);
 
 
