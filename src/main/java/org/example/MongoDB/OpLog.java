@@ -97,7 +97,7 @@ public class OpLog {
 
                 // Composite key: table|studentID|courseID|column
                 String key = table + "|" + studentID + "|" + courseID + "|" + column;
-                OplogEntry entry = new OplogEntry(table, studentID, courseID, column, newValue, timestamp);
+                OplogEntry entry = new OplogEntry(table, studentID, courseID, column, newValue, timestamp, operation);
 
                 // Retain the latest entry based on timestamp
                 if (!map.containsKey(key) || map.get(key).timestamp.isBefore(timestamp)) {
