@@ -1,4 +1,4 @@
-package org.example.MongoDB;
+package org.example;
 
 import java.io.*;
 import java.time.ZonedDateTime;
@@ -8,18 +8,20 @@ import java.util.Map;
 
 public class OpLog {
 
-    private static final String OPLOG_FILE_PATH = "/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/mongo_oplog.csv";
+    private String OPLOG_FILE_PATH = "";
+    //private static final String OPLOG_FILE_PATH = "/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/mongo_oplog.csv";
     private int opIDCounter = 0;
 
-    public OpLog(){
+    public OpLog(String OPLOG_FILE_PATH){
         // Constructor
+        this.OPLOG_FILE_PATH = OPLOG_FILE_PATH;
         createOplogIfNotExists();
         //fetch last opID from the oplog file
         opIDCounter= getLastOpID();
     }
 
     public int getLastOpID() {
-        try (BufferedReader br = new BufferedReader(new FileReader(OPLOG_FILE_PATH))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(this.OPLOG_FILE_PATH))) {
             String line;
             String lastLine = null;
 
@@ -43,8 +45,8 @@ public class OpLog {
     }
 
 
-    public static void createOplogIfNotExists() {
-        File file = new File(OPLOG_FILE_PATH);
+    public void createOplogIfNotExists() {
+        File file = new File(this.OPLOG_FILE_PATH);
 
         if (!file.exists()) {
             try {
@@ -53,7 +55,7 @@ public class OpLog {
                     try (FileWriter writer = new FileWriter(file)) {
                         // Write the header (adjust as needed)
                         writer.write("OpID,Timestamp,Table,Student ID, Course ID, Column,Operation,NewValue\n");
-                        System.out.println("oplog file created: " + OPLOG_FILE_PATH);
+                        System.out.println("oplog file created: " + this.OPLOG_FILE_PATH);
                     }
                 } else {
                     System.out.println("Failed to create oplog file.");
@@ -62,12 +64,12 @@ public class OpLog {
                 System.err.println("Error creating oplog file: " + e.getMessage());
             }
         } else {
-            System.out.println("oplog file already exists at: " + OPLOG_FILE_PATH);
+            System.out.println("oplog file already exists at: " + this.OPLOG_FILE_PATH);
         }
     }
 
     public void writeToOplog(String table,String studentID, String courseID, String column, String operation, String newValue) {
-        try (FileWriter writer = new FileWriter(OPLOG_FILE_PATH, true)) {
+        try (FileWriter writer = new FileWriter(this.OPLOG_FILE_PATH, true)) {
             // Write the log entry
             writer.write(opIDCounter + "," + ZonedDateTime.now(ZoneId.of("Asia/Kolkata")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "," + table + "," + studentID + "," + courseID + "," + column + "," + operation + "," + newValue + "\n");
             opIDCounter++;
@@ -76,7 +78,7 @@ public class OpLog {
         }
     }
 
-    void readOplog(String path, Map<String, OplogEntry> map) {
+    public void readOplog(String path, Map<String, OplogEntry> map) {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line = reader.readLine(); // Skip header
             while ((line = reader.readLine()) != null) {

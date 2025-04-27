@@ -1,6 +1,6 @@
 package org.example.Postgres_System;
 
-import org.example.MongoDB.OplogEntry;
+import org.example.OplogEntry;
 
 import java.io.File;
 import java.io.FileWriter;

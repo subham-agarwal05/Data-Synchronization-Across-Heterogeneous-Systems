@@ -4,12 +4,9 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.example.OpLog;
+import org.example.OplogEntry;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +32,7 @@ public class MongoDB {
         return db.getCollection(collectionName);
     }
 
-    OpLog opLog = new OpLog();
+    OpLog opLog = new OpLog("/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/mongo_oplog.csv");
 
     public void readDataByField(String collectionName, String studentID, String courseID, String fieldName) {
         MongoCollection<Document> collection = getCollection(collectionName);

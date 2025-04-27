@@ -1,2 +1,6 @@
 OpID,Timestamp,Table,Student ID, Course ID, Column,Operation,NewValue
-1,2025-04-22T00:25:54.504096+05:30,student_course_grades,SID1310,CSE020,grade,SET,C
+1,2025-04-27T11:42:05.705178+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
+2,2025-04-27T11:42:07.284419+05:30,student_course_grades,SID1310,CSE020,grade,SET,A
+3,2025-04-27T11:42:07.444192+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
+4,2025-04-27T11:44:29.483763+05:30,student_course_grades,SID1310,CSE020,grade,SET,D
+5,2025-04-27T11:46:27.43696+05:30,student_course_grades,SID1033,CSE016,grade,SET,A

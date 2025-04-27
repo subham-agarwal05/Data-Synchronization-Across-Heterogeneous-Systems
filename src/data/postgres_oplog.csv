@@ -1,7 +1,7 @@
 OpID,Timestamp,Table,Student ID,Course ID,Column,Operation,NewValue
-1,2025-04-23T09:34:41.7557214+05:30,student_course_grades,SID1033,CSE016,grade,GET,A
-2,2025-04-23T09:34:42.1100323+05:30,student_course_grades,SID1033,CSE016,grade,UPDATE,B+
-3,2025-04-23T09:34:42.4073166+05:30,student_course_grades,SID1033,CSE016,grade,GET,B+
-4,2025-04-23T09:53:49.5130048+05:30,student_course_grades,SID1033,CSE016,grade,GET,B+
-5,2025-04-23T09:53:49.7600884+05:30,student_course_grades,SID1033,CSE016,grade,UPDATE,A
-6,2025-04-23T09:53:50.1748017+05:30,student_course_grades,SID1033,CSE016,grade,GET,A
+1,2025-04-23T09:34:41.7557214+05:30,student_course_grades,SID1033,CSE016,grade,GET,NA
+2,2025-04-23T09:34:42.1100323+05:30,student_course_grades,SID1033,CSE016,grade,SET,B+
+3,2025-04-23T09:34:42.4073166+05:30,student_course_grades,SID1033,CSE016,grade,GET,NA
+4,2025-04-23T09:53:49.5130048+05:30,student_course_grades,SID1033,CSE016,grade,GET,NA
+5,2025-04-23T09:53:49.7600884+05:30,student_course_grades,SID1033,CSE016,grade,SET,A
+6,2025-04-23T09:53:50.1748017+05:30,student_course_grades,SID1033,CSE016,grade,GET,NA

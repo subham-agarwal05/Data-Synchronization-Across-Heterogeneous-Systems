@@ -3,7 +3,7 @@ package org.example.Postgres_System;
 import java.sql.*;
 import java.time.ZonedDateTime;
 import org.example.DatabaseDAOInterface;
-import org.example.MongoDB.OplogEntry;
+import org.example.OplogEntry;
 public class PostgresDAO implements DatabaseDAOInterface{
 
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres_db";

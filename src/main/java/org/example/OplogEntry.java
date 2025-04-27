@@ -1,4 +1,4 @@
-package org.example.MongoDB;
+package org.example;
 
 import java.time.ZonedDateTime;
 
