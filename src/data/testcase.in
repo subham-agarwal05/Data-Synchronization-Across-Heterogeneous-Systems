@@ -66,6 +66,6 @@ SQL.GET(student_course_grades, grade, SID1403, CSE006)
 HIVE.GET(student_course_grades, grade, SID1403, CSE006)
 
 
-MONGO.GET(student_course_grades, email_id, SID1403, CSE006)
-MONGO.SET(student_course_grades, email_id, SID1403, CSE006, Divyam.Sareen@iiitb.ac.in)
-MONGO.GET(student_course_grades, email_id, SID1403, CSE006)
+MONGO.GET(student_course_grades, email ID, SID1403, CSE006)
+MONGO.SET(student_course_grades, email ID, SID1403, CSE006, Divyam.Sareen@iiitb.ac.in)
+MONGO.GET(student_course_grades, email ID, SID1403, CSE006)
