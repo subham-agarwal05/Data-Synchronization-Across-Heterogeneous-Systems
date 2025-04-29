@@ -100,9 +100,6 @@ public class Main {
                     case "MERGE":
                         if (parts.length >= 1) {
                             String sourceName = parts[0].trim();
-                            if (sourceName.equalsIgnoreCase("SQL")) {
-                                sourceName = "postgresql";
-                            }
                             try {
                                 dao.Merge(sourceName);
                             } catch (Exception e) {

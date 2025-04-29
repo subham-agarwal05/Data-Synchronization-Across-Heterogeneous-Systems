@@ -76,7 +76,7 @@ public class MongoDAO implements DatabaseDAOInterface {
         String oplogPath;
         if ("hive".equalsIgnoreCase(source)) {
             oplogPath = externalOpLogPaths[0];
-        } else if ("postgresql".equalsIgnoreCase(source)) {
+        } else if ("sql".equalsIgnoreCase(source)) {
             oplogPath = externalOpLogPaths[1];
         } else {
             System.out.println("Invalid source: " + source);
