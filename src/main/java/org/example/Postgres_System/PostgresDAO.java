@@ -2,13 +2,24 @@ package org.example.Postgres_System;
 
 import java.sql.*;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.example.DatabaseDAOInterface;
 import org.example.OplogEntry;
+import org.example.OpLog;
+
 public class PostgresDAO implements DatabaseDAOInterface{
 
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres_db";
     private static final String USER = "postgres";
     private static final String PASSWORD = "root";
+    private static final String[] externalOpLogPaths={
+            "src/data/mongo_oplog.csv",
+            "src/data/hive_oplog.csv"
+    };
+
+    static OpLog opLog = new OpLog("src/data/postgres_oplog.csv")  ;
 
     // 1. Get field value by composite key
     @Override
@@ -22,8 +33,9 @@ public class PostgresDAO implements DatabaseDAOInterface{
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     // Log the operation to the oplog
-                    OplogEntry entry = new OplogEntry(tableName, studentID, courseID, fieldName, rs.getString(fieldName), ZonedDateTime.now(), "GET");
-                    Oplog_PostgresDAO.insertOplogEntry(entry);
+                    //OplogEntry entry = new OplogEntry(tableName, studentID, courseID, fieldName, rs.getString(fieldName), ZonedDateTime.now(), "GET");
+                    //Oplog_PostgresDAO.insertOplogEntry(entry);
+                    opLog.writeToOplog(tableName, studentID, courseID, fieldName, "GET", "NA");
                     return rs.getString(fieldName);
                 } else {
                     throw new SQLException(String.format("No record found for Student ID '%s' and Course ID '%s'.", studentID, courseID));
@@ -48,28 +60,90 @@ public class PostgresDAO implements DatabaseDAOInterface{
                 throw new SQLException(String.format("Update failed. No record found for Student ID '%s' and Course ID '%s'.", studentID, courseID));
             } else {
                 // Log the operation to the oplog
-                OplogEntry entry = new OplogEntry(tableName, studentID, courseID, targetFieldName, newValue, ZonedDateTime.now(), "UPDATE");
-                Oplog_PostgresDAO.insertOplogEntry(entry);
+                //OplogEntry entry = new OplogEntry(tableName, studentID, courseID, targetFieldName, newValue, ZonedDateTime.now(), "UPDATE");
+                //Oplog_PostgresDAO.insertOplogEntry(entry);
+                opLog.writeToOplog(tableName, studentID, courseID, targetFieldName, "SET", newValue);
                 System.out.println("Updated successfully.");
             }
         }
     }
 
+    public static void postgresMerge(String source) throws Exception {
+        String oplogPath;
+        if ("mongo".equalsIgnoreCase(source)) {
+            oplogPath = externalOpLogPaths[0];
+        } else if ("hive".equalsIgnoreCase(source)) {
+            oplogPath = externalOpLogPaths[1];
+        } else {
+            System.out.println("Invalid source: " + source);
+            return;
+        }
+
+        DatabaseDAOInterface dao = new org.example.Postgres_System.PostgresDAO();
+        // Map of latest ops from external and mongo oplogs
+        Map<String, OplogEntry> externalOps = new HashMap<>();
+        Map<String, OplogEntry> postgresOps = new HashMap<>();
+
+        opLog.readOplog(oplogPath, externalOps);
+        opLog.readOplog("src/data/postgres_oplog.csv", postgresOps);
+
+        //print both maps
+        System.out.println("External Oplog Entries:");
+        for (OplogEntry entry : externalOps.values()) {
+            System.out.println(entry.studentID + " | Course: " + entry.courseID
+                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+        }
+
+        System.out.println("Postgres Oplog Entries:");
+        for (OplogEntry entry : postgresOps.values()) {
+            System.out.println(entry.studentID + " | Course: " + entry.courseID
+                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+        }
+
+        for (String key : externalOps.keySet()) {
+            OplogEntry externalEntry = externalOps.get(key);
+            OplogEntry postgresEntry = postgresOps.get(key);
+
+            boolean shouldUpdate = false;
+
+            if (postgresEntry == null || externalEntry.timestamp.isAfter(postgresEntry.timestamp)) {
+                shouldUpdate = true;
+            }
+
+            if (shouldUpdate) {
+                dao.updateFieldByCompositeKey(
+                        externalEntry.studentID,
+                        externalEntry.courseID,
+                        externalEntry.column,
+                        externalEntry.newValue,
+                        externalEntry.tableName
+                );
+
+                System.out.println("Merged UPDATE to Postgres for: "
+                        + externalEntry.studentID + " | Course: " + externalEntry.courseID
+                        + " | Field: " + externalEntry.column + " | Value: " + externalEntry.newValue);
+            }
+        }
+        System.out.println("Merged Postgres with " +source+  " successfully.");
+    }
+
     public static void main(String[] args) {
         try {
             Class.forName("org.postgresql.Driver");
-            DatabaseDAOInterface dao = new PostgresDAO();
-            String studentID = "SID1033";
-            String courseID = "CSE016";
-            String fieldName = "grade";
-            String tableName = "student_course_grades";
-            String fieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
-            System.out.println("Field Value: " + fieldValue);
+            //DatabaseDAOInterface dao = new PostgresDAO();
+            //String studentID = "SID1033";
+            //String courseID = "CSE016";
+            //String fieldName = "grade";
+            //String tableName = "student_course_grades";
+            //String fieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
+            //System.out.println("Field Value: " + fieldValue);
 
-            String newValue = "A";
-            dao.updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
-            String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
-            System.out.println("Updated Field Value: " + updatedFieldValue);
+            //String newValue = "A";
+            //dao.updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
+            //String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
+            //System.out.println("Updated Field Value: " + updatedFieldValue);
+            //postgresMerge("mongo");
+            postgresMerge("hive");
 
 
         } catch (Exception e) {
