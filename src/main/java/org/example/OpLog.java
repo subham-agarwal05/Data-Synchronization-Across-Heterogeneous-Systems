@@ -90,7 +90,6 @@ public class OpLog {
 
                 int opID = Integer.parseInt(parts[0]);
                 if (opID <= lastProcessedOpId) continue; // Skip already processed entries
-                System.out.println("Processing oplog entry: " + opID);
                 ZonedDateTime timestamp = ZonedDateTime.parse(parts[1]);
                 String table = parts[2];
                 String studentID = parts[3];

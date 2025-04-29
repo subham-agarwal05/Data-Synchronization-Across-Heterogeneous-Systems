@@ -119,20 +119,20 @@ public class MongoDAO implements DatabaseDAOInterface {
         lastProcessedExternalOpId = opLog.readOplog(oplogPath, externalOps, lastProcessedExternalOpId);
         lastProcessedMongoOpId = opLog.readOplog("src/data/mongo_oplog.csv", mongoOps, lastProcessedMongoOpId);
 
-        // Print filtered oplogs
-        System.out.println("Filtered External Oplog (" + source + ") Entries:");
-        for (OplogEntry entry : externalOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
-
-        System.out.println("Filtered MongoDB Oplog Entries:");
-        for (OplogEntry entry : mongoOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
+//        // Print filtered oplogs
+//        System.out.println("Filtered External Oplog (" + source + ") Entries:");
+//        for (OplogEntry entry : externalOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
+//
+//        System.out.println("Filtered MongoDB Oplog Entries:");
+//        for (OplogEntry entry : mongoOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
 
         // Merge logic
         int maxExternalOpId = lastProcessedExternalOpId;

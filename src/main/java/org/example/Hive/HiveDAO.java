@@ -129,20 +129,20 @@ public class HiveDAO implements DatabaseDAOInterface {
         lastProcessedExternalOpId = opLog.readOplog(oplogPath, externalOps, lastProcessedExternalOpId);
         lastProcessedHiveOpId =opLog.readOplog("src/data/hive_oplog.csv", hiveOps, lastProcessedHiveOpId);
 
-        // Print filtered oplogs
-        System.out.println("Filtered External Oplog (" + source + ") Entries:");
-        for (OplogEntry entry : externalOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
-
-        System.out.println("Filtered Hive Oplog Entries:");
-        for (OplogEntry entry : hiveOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
+//        // Print filtered oplogs
+//        System.out.println("Filtered External Oplog (" + source + ") Entries:");
+//        for (OplogEntry entry : externalOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
+//
+//        System.out.println("Filtered Hive Oplog Entries:");
+//        for (OplogEntry entry : hiveOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
 
         // Merge logic
         int maxExternalOpId = lastProcessedExternalOpId;

@@ -115,20 +115,20 @@ public class PostgresDAO implements DatabaseDAOInterface{
         lastProcessedExternalOpId = opLog.readOplog(oplogPath, externalOps, lastProcessedExternalOpId);
         lastProcessedPostgresOpId = opLog.readOplog("src/data/postgres_oplog.csv", postgresOps, lastProcessedPostgresOpId);
 
-        // Print filtered oplogs
-        System.out.println("Filtered External Oplog (" + source + ") Entries:");
-        for (OplogEntry entry : externalOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
-
-        System.out.println("Filtered Postgres Oplog Entries:");
-        for (OplogEntry entry : postgresOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
+//        // Print filtered oplogs
+//        System.out.println("Filtered External Oplog (" + source + ") Entries:");
+//        for (OplogEntry entry : externalOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
+//
+//        System.out.println("Filtered Postgres Oplog Entries:");
+//        for (OplogEntry entry : postgresOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
 
         // Merge logic
         int maxExternalOpId = lastProcessedExternalOpId;
