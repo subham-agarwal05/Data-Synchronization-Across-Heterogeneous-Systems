@@ -7,3 +7,9 @@ OpID,Timestamp,Table,Student ID, Course ID, Column,Operation,NewValue
 6,2025-04-29T22:36:19.555747+05:30,student_course_grades,SID1658,CSE005,grade,GET,NA
 7,2025-04-29T22:37:46.054571+05:30,student_course_grades,SID1658,CSE005,grade,SET,F
 8,2025-04-29T22:37:46.092089+05:30,student_course_grades,SID1658,CSE005,grade,GET,NA
+9,2025-04-29T23:34:02.0349861+05:30,student_course_grades,SID1891,CSE005,grade,SET,A
+10,2025-04-29T23:34:02.1099841+05:30,student_course_grades,SID1658,CSE005,grade,SET,F
+11,2025-04-29T23:34:02.1749828+05:30,student_course_grades,SID1128,CSE004,grade,SET,A
+12,2025-04-30T00:04:16.0258346+05:30,student_course_grades,SID1891,CSE005,grade,SET,A
+13,2025-04-30T00:04:16.1158299+05:30,student_course_grades,SID1658,CSE005,grade,SET,F
+14,2025-04-30T00:04:16.2918568+05:30,student_course_grades,SID1128,CSE004,grade,SET,A

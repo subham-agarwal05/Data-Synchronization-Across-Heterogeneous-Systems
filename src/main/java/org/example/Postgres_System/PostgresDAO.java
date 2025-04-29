@@ -1,5 +1,6 @@
 package org.example.Postgres_System;
 
+import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +70,8 @@ public class PostgresDAO implements DatabaseDAOInterface{
     @Override
     public void Merge(String source) throws Exception {
         String oplogPath;
+        String target = "postgres"; // Target database is always Postgres in this case
+
         if ("mongo".equalsIgnoreCase(source)) {
             oplogPath = externalOpLogPaths[0];
         } else if ("hive".equalsIgnoreCase(source)) {
@@ -78,28 +81,58 @@ public class PostgresDAO implements DatabaseDAOInterface{
             return;
         }
 
+        // File to store the last processed OpIDs for the specific source-target pair
+        // File to store the last processed OpIDs for the specific source-target pair
+        String opIdStateFile = "src/data/" + target.toLowerCase() + "_" + source.toLowerCase() + "_opid_state.txt";
+        int lastProcessedPostgresOpId = 0;
+        int lastProcessedExternalOpId = 0;
+
+        // Read the last processed OpIDs from the file
+        File file = new File(opIdStateFile);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String[] opIds = reader.readLine().split(",");
+                lastProcessedPostgresOpId = Integer.parseInt(opIds[0]);
+                lastProcessedExternalOpId = Integer.parseInt(opIds[1]);
+            } catch (IOException | NumberFormatException e) {
+                System.err.println("Error reading OpID state file: " + e.getMessage());
+            }
+        } else {
+            // Create the file and initialize it with "0,0"
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write("0,0");
+                System.out.println("OpID state file created and initialized with 0,0: " + opIdStateFile);
+            } catch (IOException e) {
+                System.err.println("Error creating OpID state file: " + e.getMessage());
+            }
+        }
+
         DatabaseDAOInterface dao = new org.example.Postgres_System.PostgresDAO();
-        // Map of latest ops from external and mongo oplogs
         Map<String, OplogEntry> externalOps = new HashMap<>();
         Map<String, OplogEntry> postgresOps = new HashMap<>();
 
-        opLog.readOplog(oplogPath, externalOps);
-        opLog.readOplog("src/data/postgres_oplog.csv", postgresOps);
+        // Read oplogs and filter based on last processed OpIDs
+        lastProcessedExternalOpId = opLog.readOplog(oplogPath, externalOps, lastProcessedExternalOpId);
+        lastProcessedPostgresOpId = opLog.readOplog("src/data/postgres_oplog.csv", postgresOps, lastProcessedPostgresOpId);
 
-        //print both maps
-        System.out.println("External Oplog ("+ source +") Entries:");
+        // Print filtered oplogs
+        System.out.println("Filtered External Oplog (" + source + ") Entries:");
         for (OplogEntry entry : externalOps.values()) {
             System.out.println(entry.studentID + " | Course: " + entry.courseID
                     + " | Field: " + entry.column + " | Value: " + entry.newValue);
         }
         System.out.println();
 
-        System.out.println("Postgres Oplog Entries:");
+        System.out.println("Filtered Postgres Oplog Entries:");
         for (OplogEntry entry : postgresOps.values()) {
             System.out.println(entry.studentID + " | Course: " + entry.courseID
                     + " | Field: " + entry.column + " | Value: " + entry.newValue);
         }
         System.out.println();
+
+        // Merge logic
+        int maxExternalOpId = lastProcessedExternalOpId;
+        int maxPostgresOpId = lastProcessedPostgresOpId;
 
         for (String key : externalOps.keySet()) {
             OplogEntry externalEntry = externalOps.get(key);
@@ -119,11 +152,20 @@ public class PostgresDAO implements DatabaseDAOInterface{
                         externalEntry.newValue,
                         externalEntry.tableName
                 );
+                lastProcessedPostgresOpId+=1;
 
                 System.out.println("Merged UPDATE to Postgres for: "
                         + externalEntry.studentID + " | Course: " + externalEntry.courseID
                         + " | Field: " + externalEntry.column + " | Value: " + externalEntry.newValue);
             }
+
+        }
+
+        // Update the OpID state file
+        try (FileWriter writer = new FileWriter(opIdStateFile)) {
+            writer.write(maxPostgresOpId + "," + maxExternalOpId);
+        } catch (IOException e) {
+            System.err.println("Error updating OpID state file: " + e.getMessage());
         }
     }
 
@@ -143,6 +185,7 @@ public class PostgresDAO implements DatabaseDAOInterface{
             //String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
             //System.out.println("Updated Field Value: " + updatedFieldValue);
             //postgresMerge("mongo");
+            dao.Merge("mongo");
             dao.Merge("hive");
 
 
