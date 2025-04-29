@@ -92,12 +92,14 @@ public class PostgresDAO implements DatabaseDAOInterface{
             System.out.println(entry.studentID + " | Course: " + entry.courseID
                     + " | Field: " + entry.column + " | Value: " + entry.newValue);
         }
+        System.out.println();
 
         System.out.println("Postgres Oplog Entries:");
         for (OplogEntry entry : postgresOps.values()) {
             System.out.println(entry.studentID + " | Course: " + entry.courseID
                     + " | Field: " + entry.column + " | Value: " + entry.newValue);
         }
+        System.out.println();
 
         for (String key : externalOps.keySet()) {
             OplogEntry externalEntry = externalOps.get(key);
@@ -123,7 +125,6 @@ public class PostgresDAO implements DatabaseDAOInterface{
                         + " | Field: " + externalEntry.column + " | Value: " + externalEntry.newValue);
             }
         }
-        System.out.println("Merged Postgres with " +source+  " successfully.");
     }
 
     public static void main(String[] args) {

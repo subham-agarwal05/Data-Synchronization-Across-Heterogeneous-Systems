@@ -3,6 +3,7 @@ package org.example;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.example.Hive.CsvToHiveImporter;
 import org.example.Hive.HiveDAO;
@@ -22,24 +23,29 @@ public class Main {
         DatabaseDAOInterface mongoDao = new MongoDAO();
 
         //load csv into databases optionally
+        Scanner scanner = new Scanner(System.in);
+
         System.out.println("Do you want to load csv into MongoDB? (y/n)");
-        String loadCsv = System.console().readLine();
+        String loadCsv = scanner.nextLine();
         if (loadCsv.equalsIgnoreCase("y")) {
             String csvFilePath = "src/data/student_course_grades.csv";
             CsvToMongoImporter.importCsv(csvFilePath);
         }
+
         System.out.println("Do you want to load csv into Hive? (y/n)");
-        String loadHive = System.console().readLine();
+        String loadHive = scanner.nextLine();
         if (loadHive.equalsIgnoreCase("y")) {
             String csvFilePath = "src/data/student_course_grades.csv";
             CsvToHiveImporter.importCsv(csvFilePath);
         }
+
         System.out.println("Do you want to load csv into Postgres? (y/n)");
-        String loadPostgres = System.console().readLine();
+        String loadPostgres = scanner.nextLine();
         if (loadPostgres.equalsIgnoreCase("y")) {
             String csvFilePath = "src/data/student_course_grades.csv";
             CsvToPostgresImporter.importCsv(csvFilePath);
         }
+
 
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -62,7 +68,9 @@ public class Main {
                 String[] parts = argsStr.split(",");
 
                 DatabaseDAOInterface dao = getDao(systemName, hiveDao, sqlDao, mongoDao);
-
+                System.out.println("-----------------------------------------------------------");
+                //print the command
+                System.out.println(systemName + " " + operation + "(" + argsStr + ")");
                 switch (operation.toUpperCase()) {
                     case "GET":
                         if (parts.length >= 4) {
@@ -100,11 +108,14 @@ public class Main {
                     case "MERGE":
                         if (parts.length >= 1) {
                             String sourceName = parts[0].trim();
+                            System.out.println("\n \t\t\t\t***MERGING "+ systemName+ " with "+ sourceName+ "***");
                             try {
                                 dao.Merge(sourceName);
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                System.out.println("\n \t\t\t\t***"+systemName + " FAILED TO MERGE " + sourceName+ "***");
                             }
+                            System.out.println("\n \t\t\t\t***"+systemName + " MERGED WITH " + sourceName+ "***");
                         } else {
                             System.err.println("Invalid MERGE arguments: " + argsStr);
                         }
