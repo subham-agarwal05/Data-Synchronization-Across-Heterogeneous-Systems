@@ -1,14 +1,4 @@
 OpID,Timestamp,Table,Student ID, Course ID, Column,Operation,NewValue
-1,2025-04-27T11:42:05.705178+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
-2,2025-04-27T11:42:07.284419+05:30,student_course_grades,SID1310,CSE020,grade,SET,A
-3,2025-04-27T11:42:07.444192+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
-4,2025-04-27T11:44:29.483763+05:30,student_course_grades,SID1310,CSE020,grade,SET,D
-5,2025-04-27T11:46:27.43696+05:30,student_course_grades,SID1033,CSE016,grade,SET,A
-6,2025-04-29T17:29:58.620318+05:30,student_course_grades,SID1033,CSE016,grade,SET,A
-7,2025-04-29T17:30:19.094615+05:30,student_course_grades,SID1310,CSE020,grade,SET,D
-8,2025-04-29T17:32:27.770127+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
-9,2025-04-29T17:32:44.842757+05:30,student_course_grades,SID1310,CSE020,grade,SET,A+
-10,2025-04-29T17:32:44.927321+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
-11,2025-04-29T17:37:05.819983+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
-12,2025-04-29T17:37:23.696825+05:30,student_course_grades,SID1310,CSE020,grade,SET,D
-13,2025-04-29T17:37:23.783839+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
+1,2025-04-29T21:58:38.575907+05:30,student_course_grades,SID1128,CSE004,grade,SET,A
+2,2025-04-29T21:58:38.700246+05:30,student_course_grades,SID1128,CSE004,grade,GET,NA
+3,2025-04-29T21:58:59.132092+05:30,student_course_grades,SID1658,CSE005,grade,SET,F

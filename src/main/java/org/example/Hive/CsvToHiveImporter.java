@@ -29,9 +29,7 @@ public class CsvToHiveImporter {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public static void main(String[] args) throws Exception {
-
-        String csvPath = "/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/student_course_grades.csv";
+    public static void importCsv(String csvPath) throws Exception {
 
         // Derive table name from file name (without extension)
         String fileName = Paths.get(csvPath).getFileName().toString();

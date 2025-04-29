@@ -89,7 +89,7 @@ public class MongoDAO implements DatabaseDAOInterface {
         opLog.readOplog(oplogPath, externalOps);
         opLog.readOplog("src/data/mongo_oplog.csv", mongoOps);
 
-        System.out.println("External Oplog Entries:");
+        System.out.println("External Oplog ("+ source +") Entries:");
         for (OplogEntry entry : externalOps.values()) {
             System.out.println(entry.studentID + " | Course: " + entry.courseID
                     + " | Field: " + entry.column + " | Value: " + entry.newValue);

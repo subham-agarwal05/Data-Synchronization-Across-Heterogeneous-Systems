@@ -87,7 +87,7 @@ public class PostgresDAO implements DatabaseDAOInterface{
         opLog.readOplog("src/data/postgres_oplog.csv", postgresOps);
 
         //print both maps
-        System.out.println("External Oplog Entries:");
+        System.out.println("External Oplog ("+ source +") Entries:");
         for (OplogEntry entry : externalOps.values()) {
             System.out.println(entry.studentID + " | Course: " + entry.courseID
                     + " | Field: " + entry.column + " | Value: " + entry.newValue);
