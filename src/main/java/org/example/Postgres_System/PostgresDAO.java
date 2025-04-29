@@ -1,7 +1,6 @@
 package org.example.Postgres_System;
 
 import java.sql.*;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +66,8 @@ public class PostgresDAO implements DatabaseDAOInterface{
             }
         }
     }
-
-    public static void postgresMerge(String source) throws Exception {
+    @Override
+    public void Merge(String source) throws Exception {
         String oplogPath;
         if ("mongo".equalsIgnoreCase(source)) {
             oplogPath = externalOpLogPaths[0];
@@ -130,7 +129,7 @@ public class PostgresDAO implements DatabaseDAOInterface{
     public static void main(String[] args) {
         try {
             Class.forName("org.postgresql.Driver");
-            //DatabaseDAOInterface dao = new PostgresDAO();
+            DatabaseDAOInterface dao = new PostgresDAO();
             //String studentID = "SID1033";
             //String courseID = "CSE016";
             //String fieldName = "grade";
@@ -143,7 +142,7 @@ public class PostgresDAO implements DatabaseDAOInterface{
             //String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
             //System.out.println("Updated Field Value: " + updatedFieldValue);
             //postgresMerge("mongo");
-            postgresMerge("hive");
+            dao.Merge("hive");
 
 
         } catch (Exception e) {

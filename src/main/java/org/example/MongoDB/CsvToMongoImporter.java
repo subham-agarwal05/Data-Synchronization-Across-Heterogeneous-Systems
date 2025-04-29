@@ -3,6 +3,7 @@ package org.example.MongoDB;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoClients;
 import org.bson.Document;
 
 import java.io.BufferedReader;
@@ -10,17 +11,13 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class CsvToMongoImporter {
-    private final MongoClient mongoClient;
-    private final String databaseName;
-    private final String collectionName;
+    private static final String uri = "mongodb://localhost:27017";
+    private static final MongoClient mongoClient = MongoClients.create(uri);
+    private static final String databaseName = "nosql";
+    private static final String collectionName = "student_course_grades";
 
-    public CsvToMongoImporter(MongoClient mongoClient, String databaseName, String collectionName) {
-        this.mongoClient = mongoClient;
-        this.databaseName = databaseName;
-        this.collectionName = collectionName;
-    }
-
-    public void importCsv(String csvFilePath) {
+    public static void importCsv(String csvFilePath) {
+        // Get the database and collection
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
@@ -58,4 +55,17 @@ public class CsvToMongoImporter {
         }
     }
 
+    public static void main(String[] args) {
+        // Path to the CSV file
+        String csvFilePath = "src/data/student_course_grades.csv";
+
+        try {
+            importCsv(csvFilePath);
+
+            System.out.println("CSV import completed successfully.");
+        } catch (Exception e) {
+            System.err.println("An error occurred during the import process: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

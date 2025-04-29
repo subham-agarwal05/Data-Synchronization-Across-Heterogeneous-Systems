@@ -72,8 +72,8 @@ public class HiveDAO implements DatabaseDAOInterface{
             }
         }
     }
-
-    public static void hiveMerge(String source) throws Exception {
+    @Override
+    public void Merge(String source) throws Exception {
         String oplogPath;
         if ("mongo".equalsIgnoreCase(source)) {
             oplogPath = externalOpLogPaths[0];
@@ -147,7 +147,7 @@ public class HiveDAO implements DatabaseDAOInterface{
 //            dao.updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
 //            String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
 //            System.out.println("Updated Field Value: " + updatedFieldValue);
-            hiveMerge("postgresql");
+            dao.Merge("postgresql");
 
 
         } catch (Exception e) {

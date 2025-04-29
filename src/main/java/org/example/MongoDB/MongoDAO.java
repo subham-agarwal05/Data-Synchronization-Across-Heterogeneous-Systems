@@ -1,41 +1,37 @@
 package org.example.MongoDB;
 
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.example.DatabaseDAOInterface;
 import org.example.OpLog;
 import org.example.OplogEntry;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class MongoDB {
-    private final MongoClient mongoClient;
-    private final String databaseName;
-    private final MongoDatabase db;
-    private final String[] externalOpLogPaths={
-            "/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/hive_oplog.csv",
-            "/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/postgre_oplog.csv"
+public class MongoDAO implements DatabaseDAOInterface {
+    private static final String url = "mongodb://localhost:27017";
+    private static final MongoClient mongoClient = MongoClients.create(url);
+    private static final String databaseName = "nosql";
+    private final MongoDatabase db = mongoClient.getDatabase(databaseName);
+    private final String[] externalOpLogPaths = {
+            "src/data/hive_oplog.csv",
+            "src/data/postgres_oplog.csv"
     };
 
-
-    public MongoDB(MongoClient mongoClient, String databaseName) {
-        this.mongoClient = mongoClient;
-        this.databaseName = databaseName;
-        this.db = mongoClient.getDatabase(databaseName);
-    }
+    private final OpLog opLog = new OpLog("src/data/mongo_oplog.csv");
 
 
-    public MongoCollection<Document> getCollection(String collectionName) {
+    private MongoCollection<Document> getCollection(String collectionName) {
         return db.getCollection(collectionName);
     }
 
-    OpLog opLog = new OpLog("/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/mongo_oplog.csv");
-
-    public void readDataByField(String collectionName, String studentID, String courseID, String fieldName) {
-        MongoCollection<Document> collection = getCollection(collectionName);
+    @Override
+    public String getFieldValueByCompositeKey(String studentID, String courseID, String fieldName, String tableName) {
+        MongoCollection<Document> collection = getCollection(tableName);
         Document query = new Document("student-ID", studentID)
                 .append("course-id", courseID);
 
@@ -43,45 +39,40 @@ public class MongoDB {
 
         if (doc == null) {
             System.out.println("No record found for Student ID: " + studentID + " and Course ID: " + courseID);
-            return;
+            return null;
         }
 
         if (fieldName.equalsIgnoreCase("NA")) {
-            // Print full document
             System.out.println(doc.toJson());
+            return null;
         } else {
             Object value = doc.get(fieldName);
             if (value != null) {
                 System.out.println("Student ID: " + studentID + ", Course ID: " + courseID + ", " + fieldName + ": " + value);
-                opLog.writeToOplog(collectionName, studentID, courseID, fieldName, "GET", "NA");
+                opLog.writeToOplog(tableName, studentID, courseID, fieldName, "GET", "NA");
+                return value.toString();
             } else {
                 System.out.println("Field '" + fieldName + "' not found for Student ID: " + studentID + " and Course ID: " + courseID);
+                return null;
             }
         }
     }
 
-
-
-    //update data by field
-    public void updateDataByField(String collectionName, String studentID, String courseID, String fieldName, String newValue) {
-        MongoCollection<Document> collection = getCollection(collectionName);
+    @Override
+    public void updateFieldByCompositeKey(String studentID, String courseID, String targetFieldName, String newValue, String tableName) {
+        MongoCollection<Document> collection = getCollection(tableName);
         Document query = new Document("student-ID", studentID)
                 .append("course-id", courseID);
-        Document update = new Document("$set", new Document(fieldName, newValue));
+        Document update = new Document("$set", new Document(targetFieldName, newValue));
 
         collection.updateOne(query, update);
         System.out.println("Data updated successfully.");
 
-        // Write to oplog using studentID as column for tracking
-        opLog.writeToOplog(collectionName, studentID , courseID, fieldName, "SET", newValue);
+        opLog.writeToOplog(tableName, studentID, courseID, targetFieldName, "SET", newValue);
     }
 
-
-
-
-
-    //merge function
-    public void mongoMerge(String source) {
+    @Override
+    public void Merge(String source) {
         String oplogPath;
         if ("hive".equalsIgnoreCase(source)) {
             oplogPath = externalOpLogPaths[0];
@@ -92,14 +83,12 @@ public class MongoDB {
             return;
         }
 
-        // Map of latest ops from external and mongo oplogs
         Map<String, OplogEntry> externalOps = new HashMap<>();
         Map<String, OplogEntry> mongoOps = new HashMap<>();
 
         opLog.readOplog(oplogPath, externalOps);
-        opLog.readOplog("/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/mongo_oplog.csv", mongoOps);
+        opLog.readOplog("src/data/mongo_oplog.csv", mongoOps);
 
-        //print both maps
         System.out.println("External Oplog Entries:");
         for (OplogEntry entry : externalOps.values()) {
             System.out.println(entry.studentID + " | Course: " + entry.courseID
@@ -123,12 +112,12 @@ public class MongoDB {
             }
 
             if (shouldUpdate) {
-                updateDataByField(
-                        externalEntry.tableName,
+                updateFieldByCompositeKey(
                         externalEntry.studentID,
                         externalEntry.courseID,
                         externalEntry.column,
-                        externalEntry.newValue
+                        externalEntry.newValue,
+                        externalEntry.tableName
                 );
 
                 System.out.println("Merged UPDATE to MongoDB for: "
@@ -136,9 +125,22 @@ public class MongoDB {
                         + " | Field: " + externalEntry.column + " | Value: " + externalEntry.newValue);
             }
         }
-        System.out.println("Merged MongoDB with " +source+  " successfully.");
+        System.out.println("Merged MongoDB with " + source + " successfully.");
     }
 
+    public static void main(String[] args) throws Exception {
+        DatabaseDAOInterface dao = new MongoDAO();
+        String studentID = "SID1033";
+        String courseID = "CSE016";
+        String fieldName = "grade";
+        String tableName = "student_course_grades";
+        String fieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
+        System.out.println("Field Value: " + fieldValue);
 
-
+        String newValue = "A";
+        dao.updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
+        String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
+        System.out.println("Updated Field Value: " + updatedFieldValue);
+        dao.Merge("hive");
+    }
 }
