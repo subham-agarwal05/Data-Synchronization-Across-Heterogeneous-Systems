@@ -62,7 +62,6 @@ public class PostgresDAO implements DatabaseDAOInterface{
                 //OplogEntry entry = new OplogEntry(tableName, studentID, courseID, targetFieldName, newValue, ZonedDateTime.now(), "UPDATE");
                 //Oplog_PostgresDAO.insertOplogEntry(entry);
                 opLog.writeToOplog(tableName, studentID, courseID, targetFieldName, "SET", newValue);
-                System.out.println("Updated successfully.");
             }
         }
     }
@@ -87,19 +86,19 @@ public class PostgresDAO implements DatabaseDAOInterface{
         opLog.readOplog("src/data/postgres_oplog.csv", postgresOps);
 
         //print both maps
-        System.out.println("External Oplog ("+ source +") Entries:");
-        for (OplogEntry entry : externalOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
-
-        System.out.println("Postgres Oplog Entries:");
-        for (OplogEntry entry : postgresOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
+//        System.out.println("External Oplog ("+ source +") Entries:");
+//        for (OplogEntry entry : externalOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
+//
+//        System.out.println("Postgres Oplog Entries:");
+//        for (OplogEntry entry : postgresOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
 
         for (String key : externalOps.keySet()) {
             OplogEntry externalEntry = externalOps.get(key);

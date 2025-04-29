@@ -99,19 +99,19 @@ public class HiveDAO implements DatabaseDAOInterface {
         opLog.readOplog(oplogPath, externalOps);
         opLog.readOplog("src/data/hive_oplog.csv", hiveOps);
 
-        System.out.println("External Oplog ("+ source +") Entries:");
-        externalOps.values().forEach(entry -> System.out.println(
-                entry.studentID + " | Course: " + entry.courseID
-                        + " | Field: " + entry.column + " | Value: " + entry.newValue
-        ));
-        System.out.println();
-
-        System.out.println("Hive Oplog Entries:");
-        hiveOps.values().forEach(entry -> System.out.println(
-                entry.studentID + " | Course: " + entry.courseID
-                        + " | Field: " + entry.column + " | Value: " + entry.newValue
-        ));
-        System.out.println();
+//        System.out.println("External Oplog ("+ source +") Entries:");
+//        externalOps.values().forEach(entry -> System.out.println(
+//                entry.studentID + " | Course: " + entry.courseID
+//                        + " | Field: " + entry.column + " | Value: " + entry.newValue
+//        ));
+//        System.out.println();
+//
+//        System.out.println("Hive Oplog Entries:");
+//        hiveOps.values().forEach(entry -> System.out.println(
+//                entry.studentID + " | Course: " + entry.courseID
+//                        + " | Field: " + entry.column + " | Value: " + entry.newValue
+//        ));
+//        System.out.println();
 
         for (Map.Entry<String, OplogEntry> extEntry : externalOps.entrySet()) {
             OplogEntry externalEntry = extEntry.getValue();

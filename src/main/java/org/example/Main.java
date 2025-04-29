@@ -35,7 +35,7 @@ public class Main {
         System.out.println("Do you want to load csv into Hive? (y/n)");
         String loadHive = scanner.nextLine();
         if (loadHive.equalsIgnoreCase("y")) {
-            String csvFilePath = "src/data/student_course_grades.csv";
+            String csvFilePath = "/home/subham05/Desktop/NoSQL/NoSQLProject/src/data/student_course_grades.csv";
             CsvToHiveImporter.importCsv(csvFilePath);
         }
 

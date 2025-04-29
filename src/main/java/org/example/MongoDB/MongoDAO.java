@@ -66,7 +66,6 @@ public class MongoDAO implements DatabaseDAOInterface {
         Document update = new Document("$set", new Document(targetFieldName, newValue));
 
         collection.updateOne(query, update);
-        System.out.println("Data updated successfully.");
 
         opLog.writeToOplog(tableName, studentID, courseID, targetFieldName, "SET", newValue);
     }
@@ -89,19 +88,19 @@ public class MongoDAO implements DatabaseDAOInterface {
         opLog.readOplog(oplogPath, externalOps);
         opLog.readOplog("src/data/mongo_oplog.csv", mongoOps);
 
-        System.out.println("External Oplog ("+ source +") Entries:");
-        for (OplogEntry entry : externalOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
-
-        System.out.println("Mongo Oplog Entries:");
-        for (OplogEntry entry : mongoOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
-        System.out.println();
+//        System.out.println("External Oplog ("+ source +") Entries:");
+//        for (OplogEntry entry : externalOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
+//
+//        System.out.println("Mongo Oplog Entries:");
+//        for (OplogEntry entry : mongoOps.values()) {
+//            System.out.println(entry.studentID + " | Course: " + entry.courseID
+//                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
+//        }
+//        System.out.println();
 
         for (String key : externalOps.keySet()) {
             OplogEntry externalEntry = externalOps.get(key);
