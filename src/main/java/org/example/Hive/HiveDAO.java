@@ -104,12 +104,14 @@ public class HiveDAO implements DatabaseDAOInterface {
                 entry.studentID + " | Course: " + entry.courseID
                         + " | Field: " + entry.column + " | Value: " + entry.newValue
         ));
+        System.out.println();
 
         System.out.println("Hive Oplog Entries:");
         hiveOps.values().forEach(entry -> System.out.println(
                 entry.studentID + " | Course: " + entry.courseID
                         + " | Field: " + entry.column + " | Value: " + entry.newValue
         ));
+        System.out.println();
 
         for (Map.Entry<String, OplogEntry> extEntry : externalOps.entrySet()) {
             OplogEntry externalEntry = extEntry.getValue();
@@ -130,7 +132,6 @@ public class HiveDAO implements DatabaseDAOInterface {
             }
         }
 
-        System.out.println("Merged Hive with " + source + " successfully.");
     }
 
     public static void main(String[] args) {
