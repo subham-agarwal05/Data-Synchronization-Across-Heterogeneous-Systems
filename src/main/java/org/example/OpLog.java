@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
 import java.util.Map;
 
+import static java.lang.Math.max;
+
 public class OpLog {
 
     private String OPLOG_FILE_PATH = "";
@@ -78,7 +80,7 @@ public class OpLog {
         }
     }
 
-    public void readOplog(String path, Map<String, OplogEntry> map) {
+    public int readOplog(String path, Map<String, OplogEntry> map, int lastProcessedOpId) {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line = reader.readLine(); // Skip header
             while ((line = reader.readLine()) != null) {
@@ -87,6 +89,7 @@ public class OpLog {
                 if (parts.length < 8) continue;
 
                 int opID = Integer.parseInt(parts[0]);
+                if (opID <= lastProcessedOpId) continue; // Skip already processed entries
                 ZonedDateTime timestamp = ZonedDateTime.parse(parts[1]);
                 String table = parts[2];
                 String studentID = parts[3];
@@ -105,12 +108,14 @@ public class OpLog {
                 if (!map.containsKey(key) || map.get(key).timestamp.isBefore(timestamp)) {
                     map.put(key, entry);
                 }
+                lastProcessedOpId = max (lastProcessedOpId, opID);
             }
+            return lastProcessedOpId;
         } catch (IOException | NumberFormatException e) {
             System.err.println("Error reading oplog from " + path + ": " + e.getMessage());
+            return lastProcessedOpId; // Return the last processed OpID in case of error
         }
     }
-
 
 
 }
