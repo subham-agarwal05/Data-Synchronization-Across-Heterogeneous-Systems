@@ -1,77 +1,86 @@
 package org.example.Hive;
 
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.example.DatabaseDAOInterface;
 import org.example.OpLog;
 import org.example.OplogEntry;
 
-public class HiveDAO implements DatabaseDAOInterface{
+public class HiveDAO implements DatabaseDAOInterface {
 
     private static final String URL = "jdbc:hive2://localhost:10000/default";
-    private static final String USER = "";
+    private static final String USER = "hive";
     private static final String PASSWORD = "";
     private static final String HIVE_DRIVER = "org.apache.hive.jdbc.HiveDriver";
-    private static final String[] externalOpLogPaths={
+    private static final String[] externalOpLogPaths = {
             "src/data/mongo_oplog.csv",
             "src/data/postgres_oplog.csv"
     };
 
-    static OpLog opLog = new OpLog("src/data/hive_oplog.csv")  ;
-    // 1. Get field value by composite key
+    private final BasicDataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+    private static final OpLog opLog = new OpLog("src/data/hive_oplog.csv");
+
+    public HiveDAO() {
+        dataSource = new BasicDataSource();
+        dataSource.setDriverClassName(HIVE_DRIVER);
+        dataSource.setUrl(URL);
+        dataSource.setUsername(USER);
+        dataSource.setPassword(PASSWORD);
+        jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
     @Override
     public String getFieldValueByCompositeKey(String studentID, String courseID, String fieldName, String tableName) throws SQLException {
-        // Query to fetch the field value using the composite key (student-ID, course-ID)
-        String query = String.format("SELECT %s FROM %s WHERE student_id= ? AND course_id = ?", fieldName, tableName);
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, studentID);
-            pstmt.setString(2, courseID);
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE student_id = ? AND course_id = ?", fieldName, tableName
+        );
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    opLog.writeToOplog(tableName, studentID, courseID, fieldName, "GET", "NA");
-                    return rs.getString(fieldName);
-                } else {
-                    throw new SQLException(String.format("No record found for Student ID '%s' and Course ID '%s'.", studentID, courseID));
-                }
-            }
+        try {
+            String value = jdbcTemplate.queryForObject(
+                    sql,
+                    new Object[]{studentID, courseID},
+                    String.class
+            );
+            opLog.writeToOplog(tableName, studentID, courseID, fieldName, "GET", "NA");
+            return value;
+        } catch (Exception e) {
+            throw new SQLException(String.format(
+                    "No record found for Student ID '%s' and Course ID '%s'.", studentID, courseID
+            ), e);
         }
     }
 
-
-    // 2. Update field value by composite key
     @Override
     public void updateFieldByCompositeKey(String studentID, String courseID, String targetFieldName, String newValue, String tableName) throws SQLException {
-        // Dynamically include the table name and target field name in the query
+        String sql = String.format(
+                "INSERT OVERWRITE TABLE %s " +
+                        "SELECT student_id, course_id, roll_no, email_id, " +
+                        "CASE WHEN student_id = ? AND course_id = ? THEN ? ELSE %s END AS %s " +
+                        "FROM %s",
+                tableName, targetFieldName, targetFieldName, tableName
+        );
 
-        String update = String.format("INSERT OVERWRITE TABLE %s " +
-                                        "SELECT " +
-                                        "student_id, course_id, roll_no, email_id, " +
-                                        "CASE " +
-                                            "WHEN student_id = ? " +
-                                            "AND course_id  = ? THEN ? " +
-                                            "ELSE %s " +
-                                        "END AS %s " +
-                                "FROM %s", tableName, targetFieldName, targetFieldName, tableName);
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(update)) {
+        int rows = jdbcTemplate.update(
+                sql,
+                studentID,
+                courseID,
+                newValue
+        );
 
-            pstmt.setString(1, studentID);
-            pstmt.setString(2, courseID);
-            pstmt.setString(3, newValue);
-
-            try {
-                int rows = pstmt.executeUpdate();
-                System.out.println("Updated successfully.");
-                opLog.writeToOplog(tableName, studentID , courseID, targetFieldName, "SET", newValue);
-            } catch (SQLException e) {
-                throw new SQLException(String.format("Update failed. No record found for Student ID '%s' and Course ID '%s'.", studentID, courseID));
-            }
+        if (rows > 0) {
+            opLog.writeToOplog(tableName, studentID, courseID, targetFieldName, "SET", newValue);
+        } else {
+            throw new SQLException(String.format(
+                    "Update failed. No record found for Student ID '%s' and Course ID '%s'.", studentID, courseID
+            ));
         }
     }
+
     @Override
     public void Merge(String source) throws Exception {
         String oplogPath;
@@ -84,72 +93,56 @@ public class HiveDAO implements DatabaseDAOInterface{
             return;
         }
 
-        DatabaseDAOInterface dao = new org.example.Hive.HiveDAO();
-        // Map of latest ops from external and mongo oplogs
         Map<String, OplogEntry> externalOps = new HashMap<>();
         Map<String, OplogEntry> hiveOps = new HashMap<>();
 
         opLog.readOplog(oplogPath, externalOps);
         opLog.readOplog("src/data/hive_oplog.csv", hiveOps);
 
-        //print both maps
         System.out.println("External Oplog Entries:");
-        for (OplogEntry entry : externalOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
+        externalOps.values().forEach(entry -> System.out.println(
+                entry.studentID + " | Course: " + entry.courseID
+                        + " | Field: " + entry.column + " | Value: " + entry.newValue
+        ));
 
         System.out.println("Hive Oplog Entries:");
-        for (OplogEntry entry : hiveOps.values()) {
-            System.out.println(entry.studentID + " | Course: " + entry.courseID
-                    + " | Field: " + entry.column + " | Value: " + entry.newValue);
-        }
+        hiveOps.values().forEach(entry -> System.out.println(
+                entry.studentID + " | Course: " + entry.courseID
+                        + " | Field: " + entry.column + " | Value: " + entry.newValue
+        ));
 
-        for (String key : externalOps.keySet()) {
-            OplogEntry externalEntry = externalOps.get(key);
-            OplogEntry hiveEntry = hiveOps.get(key);
-
-            boolean shouldUpdate = false;
+        for (Map.Entry<String, OplogEntry> extEntry : externalOps.entrySet()) {
+            OplogEntry externalEntry = extEntry.getValue();
+            OplogEntry hiveEntry = hiveOps.get(extEntry.getKey());
 
             if (hiveEntry == null || externalEntry.timestamp.isAfter(hiveEntry.timestamp)) {
-                shouldUpdate = true;
-            }
-
-            if (shouldUpdate) {
-                dao.updateFieldByCompositeKey(
+                updateFieldByCompositeKey(
                         externalEntry.studentID,
                         externalEntry.courseID,
                         externalEntry.column,
                         externalEntry.newValue,
                         externalEntry.tableName
                 );
-
                 System.out.println("Merged UPDATE to Hive for: "
                         + externalEntry.studentID + " | Course: " + externalEntry.courseID
-                        + " | Field: " + externalEntry.column + " | Value: " + externalEntry.newValue);
+                        + " | Field: " + externalEntry.column + " | Value: " + externalEntry.newValue
+                );
             }
         }
-        System.out.println("Merged Hive with " +source+  " successfully.");
+
+        System.out.println("Merged Hive with " + source + " successfully.");
     }
 
     public static void main(String[] args) {
         try {
             Class.forName(HIVE_DRIVER);
-            DatabaseDAOInterface dao = new org.example.Hive.HiveDAO();
-            String studentID = "SID1310";
-            String courseID = "CSE020";
-            String fieldName = "grade";
-            String tableName = "student_course_grades";
-//            String fieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
-//            System.out.println("Field Value: " + fieldValue);
-//
-//            String newValue = "A";
-//            dao.updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
-//            String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
-//            System.out.println("Updated Field Value: " + updatedFieldValue);
-            dao.Merge("postgresql");
-
-
+            HiveDAO dao = new HiveDAO();
+            String value = dao.getFieldValueByCompositeKey("SID1310", "CSE020", "grade", "student_course_grades");
+            System.out.println(value);
+            dao.updateFieldByCompositeKey("SID1310", "CSE020", "grade", "D", "student_course_grades");
+            String value2 = dao.getFieldValueByCompositeKey("SID1310", "CSE020", "grade", "student_course_grades");
+            System.out.println(value2);
+            //dao.Merge("postgresql");
         } catch (Exception e) {
             e.printStackTrace();
         }
