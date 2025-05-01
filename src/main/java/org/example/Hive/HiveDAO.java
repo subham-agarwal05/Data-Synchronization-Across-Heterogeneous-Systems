@@ -145,8 +145,6 @@ public class HiveDAO implements DatabaseDAOInterface {
 //        System.out.println();
 
         // Merge logic
-        int maxExternalOpId = lastProcessedExternalOpId;
-        int maxHiveOpId = lastProcessedHiveOpId;
 
         for (String key : externalOps.keySet()) {
             OplogEntry externalEntry = externalOps.get(key);
@@ -179,22 +177,6 @@ public class HiveDAO implements DatabaseDAOInterface {
             writer.write(lastProcessedHiveOpId + "," + lastProcessedExternalOpId);
         } catch (IOException e) {
             System.err.println("Error updating OpID state file: " + e.getMessage());
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            Class.forName(HIVE_DRIVER);
-            HiveDAO dao = new HiveDAO();
-//            String value = dao.getFieldValueByCompositeKey("SID1310", "CSE020", "grade", "student_course_grades");
-//            System.out.println(value);
-//            dao.updateFieldByCompositeKey("SID1310", "CSE020", "grade", "D", "student_course_grades");
-//            String value2 = dao.getFieldValueByCompositeKey("SID1310", "CSE020", "grade", "student_course_grades");
-//            System.out.println(value2);
-            dao.Merge("sql");
-            dao.Merge("mongo");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

@@ -77,9 +77,9 @@ public class MongoDAO implements DatabaseDAOInterface {
         String target = "mongo"; // Target database is now MongoDB
 
         if ("hive".equalsIgnoreCase(source)) {
-            oplogPath = externalOpLogPaths[1];
-        } else if ("sql".equalsIgnoreCase(source)) {
             oplogPath = externalOpLogPaths[0];
+        } else if ("sql".equalsIgnoreCase(source)) {
+            oplogPath = externalOpLogPaths[1];
         } else {
             System.out.println("Invalid source: " + source);
             return;
@@ -134,9 +134,6 @@ public class MongoDAO implements DatabaseDAOInterface {
 //        System.out.println();
 
         // Merge logic
-        int maxExternalOpId = lastProcessedExternalOpId;
-        int maxMongoOpId = lastProcessedMongoOpId;
-
         for (String key : externalOps.keySet()) {
             OplogEntry externalEntry = externalOps.get(key);
             OplogEntry mongoEntry = mongoOps.get(key);
@@ -168,23 +165,5 @@ public class MongoDAO implements DatabaseDAOInterface {
         } catch (IOException e) {
             System.err.println("Error updating OpID state file: " + e.getMessage());
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        DatabaseDAOInterface dao = new MongoDAO();
-//        String studentID = "SID1033";
-//        String courseID = "CSE016";
-//        String fieldName = "grade";
-//        String tableName = "student_course_grades";
-//        String fieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
-//        System.out.println("Field Value: " + fieldValue);
-//
-//        String newValue = "A";
-//        dao.updateFieldByCompositeKey(studentID, courseID, fieldName, newValue, tableName);
-//        String updatedFieldValue = dao.getFieldValueByCompositeKey(studentID, courseID, fieldName, tableName);
-//        System.out.println("Updated Field Value: " + updatedFieldValue);
-//        dao.Merge("hive");
-        dao.Merge("sql");
-        dao.Merge("mongo");
     }
 }
