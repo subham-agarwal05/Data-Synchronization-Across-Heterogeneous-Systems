@@ -136,7 +136,7 @@ public class PostgresDAO implements DatabaseDAOInterface{
 
             boolean shouldUpdate = false;
 
-            if (postgresEntry == null || externalEntry.timestamp.isAfter(postgresEntry.timestamp)) {
+            if (postgresEntry == null || externalEntry.timestamp.compareTo(postgresEntry.timestamp)>=0) {
                 shouldUpdate = true;
             }
 

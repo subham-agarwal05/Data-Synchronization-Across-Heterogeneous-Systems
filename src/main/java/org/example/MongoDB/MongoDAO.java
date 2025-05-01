@@ -140,7 +140,7 @@ public class MongoDAO implements DatabaseDAOInterface {
 
             boolean shouldUpdate = false;
 
-            if (mongoEntry == null || externalEntry.timestamp.isAfter(mongoEntry.timestamp)) {
+            if (mongoEntry == null || externalEntry.timestamp.compareTo(mongoEntry.timestamp)>=0) {
                 shouldUpdate = true;
             }
 

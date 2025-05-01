@@ -152,7 +152,7 @@ public class HiveDAO implements DatabaseDAOInterface {
 
             boolean shouldUpdate = false;
 
-            if (hiveEntry == null || externalEntry.timestamp.isAfter(hiveEntry.timestamp)) {
+            if (hiveEntry == null || externalEntry.timestamp.compareTo(hiveEntry.timestamp)>=0) {
                 shouldUpdate = true;
             }
 

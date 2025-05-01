@@ -105,7 +105,7 @@ public class OpLog {
                 OplogEntry entry = new OplogEntry(table, studentID, courseID, column, newValue, timestamp, operation);
 
                 // Retain the latest entry based on timestamp
-                if (!map.containsKey(key) || map.get(key).timestamp.isBefore(timestamp)) {
+                if (!map.containsKey(key) || map.get(key).timestamp.compareTo(timestamp) <= 0) {
                     map.put(key, entry);
                 }
                 lastProcessedOpId = max (lastProcessedOpId, opID);
