@@ -164,7 +164,7 @@ public class MongoDAO implements DatabaseDAOInterface {
 
         // Update the OpID state file
         try (FileWriter writer = new FileWriter(opIdStateFile)) {
-            writer.write(maxMongoOpId + "," + maxExternalOpId);
+            writer.write(lastProcessedMongoOpId + "," + lastProcessedExternalOpId);
         } catch (IOException e) {
             System.err.println("Error updating OpID state file: " + e.getMessage());
         }

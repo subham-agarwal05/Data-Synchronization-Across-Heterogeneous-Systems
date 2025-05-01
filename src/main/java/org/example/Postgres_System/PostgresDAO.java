@@ -162,7 +162,7 @@ public class PostgresDAO implements DatabaseDAOInterface{
 
         // Update the OpID state file
         try (FileWriter writer = new FileWriter(opIdStateFile)) {
-            writer.write(maxPostgresOpId + "," + maxExternalOpId);
+            writer.write(lastProcessedPostgresOpId + "," + lastProcessedExternalOpId);
         } catch (IOException e) {
             System.err.println("Error updating OpID state file: " + e.getMessage());
         }

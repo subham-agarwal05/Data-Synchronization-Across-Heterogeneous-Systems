@@ -176,7 +176,7 @@ public class HiveDAO implements DatabaseDAOInterface {
 
         // Update the OpID state file
         try (FileWriter writer = new FileWriter(opIdStateFile)) {
-            writer.write(maxHiveOpId + "," + maxExternalOpId);
+            writer.write(lastProcessedHiveOpId + "," + lastProcessedExternalOpId);
         } catch (IOException e) {
             System.err.println("Error updating OpID state file: " + e.getMessage());
         }

@@ -1,0 +1,27 @@
+OpID,Timestamp,Table,Student ID, Course ID, Column,Operation,NewValue
+1,2025-05-01T11:34:33.356018+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
+2,2025-05-01T11:34:33.359788+05:30,student_course_grades,SID1310,CSE020,grade,SET,F
+3,2025-05-01T11:34:33.36139+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
+4,2025-05-01T11:34:54.067424+05:30,student_course_grades,SID1310,CSE020,grade,GET,NA
+5,2025-05-01T11:34:54.134091+05:30,student_course_grades,SID1378,CSE018,grade,GET,NA
+6,2025-05-01T11:34:54.135154+05:30,student_course_grades,SID1378,CSE018,grade,SET,E
+7,2025-05-01T11:34:54.136024+05:30,student_course_grades,SID1378,CSE018,grade,GET,NA
+8,2025-05-01T11:34:54.214293+05:30,student_course_grades,SID1132,CSE004,grade,GET,NA
+9,2025-05-01T11:34:54.215376+05:30,student_course_grades,SID1378,CSE018,grade,GET,NA
+10,2025-05-01T11:35:14.890803+05:30,student_course_grades,SID1428,CSE014,grade,GET,NA
+11,2025-05-01T11:35:14.8917+05:30,student_course_grades,SID1428,CSE014,grade,SET,H
+12,2025-05-01T11:35:14.892389+05:30,student_course_grades,SID1428,CSE014,grade,GET,NA
+13,2025-05-01T11:35:57.668275+05:30,student_course_grades,SID1428,CSE014,grade,GET,NA
+14,2025-05-01T11:35:57.995434+05:30,student_course_grades,SID1403,CSE006,grade,GET,NA
+15,2025-05-01T11:35:57.996443+05:30,student_course_grades,SID1403,CSE006,grade,SET,N
+16,2025-05-01T11:35:57.99715+05:30,student_course_grades,SID1403,CSE006,grade,GET,NA
+17,2025-05-01T11:36:18.395681+05:30,student_course_grades,SID1033,CSE016,grade,SET,B
+18,2025-05-01T11:36:18.397182+05:30,student_course_grades,SID1403,CSE006,grade,SET,M
+19,2025-05-01T11:36:18.398302+05:30,student_course_grades,SID1378,CSE018,grade,SET,E
+20,2025-05-01T11:36:18.39907+05:30,student_course_grades,SID1428,CSE014,grade,SET,H
+21,2025-05-01T11:36:18.399593+05:30,student_course_grades,SID1310,CSE020,grade,SET,F
+17,2025-05-01T11:36:18.400952+05:30,student_course_grades,SID1403,CSE006,grade,GET,NA
+18,2025-05-01T11:36:18.537257+05:30,student_course_grades,SID1403,CSE006,grade,GET,NA
+19,2025-05-01T11:38:24.932342+05:30,student_course_grades,SID1403,CSE006,email ID,GET,NA
+20,2025-05-01T11:38:24.933513+05:30,student_course_grades,SID1403,CSE006,email ID,SET,Divyam.Sareen@iiitb.ac.in
+21,2025-05-01T11:38:24.93469+05:30,student_course_grades,SID1403,CSE006,email ID,GET,NA
