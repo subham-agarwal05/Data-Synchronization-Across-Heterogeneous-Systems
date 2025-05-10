@@ -52,7 +52,7 @@ Before running the application, ensure that all required database servers are up
 
 1. **Start Database Servers:**
 
-   * Ensure that all necessary database servers (e.g., MySQL, PostgreSQL, MongoDB) are installed and running on your system.
+   * Ensure that all necessary database servers (e.g., Hive, PostgreSQL, MongoDB) are installed and running on your system.
 
 2. **Configure DAO Files:**
 
@@ -60,7 +60,7 @@ Before running the application, ensure that all required database servers are up
 
    * For each DAO class, update the database connection parameters (such as database name, username, and password) to match your local database setup.
 
-   * Example (for a MySQL DAO):([GitHub][1])
+   * Example (for a Hive DAO):([GitHub][1])
 
      ```java
      String url = "jdbc:mysql://localhost:3306/your_database_name";
