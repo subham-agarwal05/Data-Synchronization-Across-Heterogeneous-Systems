@@ -25,7 +25,7 @@ Data-Synchronization-Across-Heterogeneous-Systems/
 
 * Java Development Kit (JDK) 8 or higher
 * Maven 3.6 or higher
-* Database servers (e.g., MySQL, PostgreSQL, MongoDB) installed and running
+* Database servers (e.g., Hive, PostgreSQL, MongoDB) installed and running
 
 ### Installation
 
