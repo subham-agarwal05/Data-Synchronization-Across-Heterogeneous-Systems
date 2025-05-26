@@ -63,9 +63,9 @@ Before running the application, ensure that all required database servers are up
    * Example (for a Hive DAO):([GitHub][1])
 
      ```java
-     String url = "jdbc:mysql://localhost:3306/your_database_name";
-     String username = "your_username";
-     String password = "your_password";
+        private static final String URL = "jdbc:hive2://localhost:10000/default";
+        private static final String USER = "hive";
+        private static final String PASSWORD = "";
      ```
 
    * Repeat this process for each DAO class corresponding to different databases.
